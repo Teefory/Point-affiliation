@@ -1,0 +1,81 @@
+import random
+import matplotlib.pyplot as plt
+
+class Point:
+  def __init__(self, x: float, y: float):
+        self.x: float = x
+        self.y: float = y
+
+def orientation(a, b, c):
+    val = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y)
+    if val == 0:
+        return 0
+    return 1 if val > 0 else 2
+def compare(a, b):
+    return a.x < b.x or (a.x == b.x and a.y < b.y)
+
+def printConvexHull(points):
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.grid(linewidth=1)
+
+    n = len(points)
+    if n < 3:
+        return  # Минимально требуемое количество точек для построения выпуклой оболочки
+
+    hull = []
+    x1  = [val.x for val in points]
+    y1  = [val.y for val in points]
+    # Находим самую левую точку
+    left = 0
+    for i in range(1, n):
+      plt.scatter([x1], [y1], color='red')
+      if points[i].x < points[left].x:
+          left = i
+
+    p = left
+    while True:
+        hull.append(points[p])
+
+        q = (p + 1) % n
+        for i in range(n):
+            if orientation(points[p], points[i], points[q]) == 2:
+                q = i
+        p = q
+
+        if p == left:
+            break
+    hull.append(hull[0])
+    x  = [val.x for val in hull]
+    y  = [val.y for val in hull]
+    # hull.append(hull[0])
+
+    # Выводим координаты точек выпуклой оболочки reversed
+    for point in reversed (hull):
+        print(f"({point.x}, {point.y})")
+    plt.plot(x, y, color='blue')
+    plt.show()
+
+
+#Генерируем случайные точки
+n = 15  # Количество точек
+listochek = []
+for i in range(n):
+  listochek.append(Point(random.randint(0, 20), random.randint(0, 20)))
+
+
+#Сортируем точки по x-координате
+listochek.sort(key=lambda p: (p.x, p.y))
+
+print("Точки:")
+#Печать точек
+for point in listochek:
+    print(f"({point.x}, {point.y})")
+print()
+
+print("Оболочка:")
+#Печать координат точек выпуклой оболочки
+printConvexHull(listochek)
+
+
+
